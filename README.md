@@ -1,5 +1,7 @@
 # AI Failure Analyzer: Stage 1 (Playwright + Pytest, Page Object Model)
 
+[![Tests](https://github.com/Mahesh-7272/ai-test-triage-agent/actions/workflows/tests.yml/badge.svg)](https://github.com/Mahesh-7272/ai-test-triage-agent/actions/workflows/tests.yml)
+
 Practice site: https://www.saucedemo.com
 
 ## Setup

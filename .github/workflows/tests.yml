@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      include_demo_failures:
+        description: "Also run the tests that fail on purpose (demo_failure)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Chromium
+        run: playwright install --with-deps chromium
+
+      - name: Run tests
+        env:
+          INCLUDE_DEMO: ${{ inputs.include_demo_failures }}
+        run: |
+          if [ "$INCLUDE_DEMO" = "true" ]; then
+            pytest
+          else
+            pytest -m "not demo_failure"
+          fi
+
+      # Upload even when tests fail, so screenshots and traces are available
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: reports/
+          if-no-files-found: ignore
